@@ -202,9 +202,9 @@ public class TicTacToe   {
 		int bestScore;
 
 		if (isComp) //Computer's turn
-			bestScore = Integer.MIN_VALUE; //Anything can be higher than this value
+			bestScore = -1000; //Anything can be higher than this value
 		else	//Player's Turn
-			bestScore = Integer.MAX_VALUE; //Anything can be lower than this value
+			bestScore = 1000; //Anything can be lower than this value
 
 
 		int currScore; //an integer that scores the current possible score
@@ -220,7 +220,7 @@ public class TicTacToe   {
 
 					cells[move[0]][move[1]]=2; //"suppose" the computer makes their move here
 
-					currScore = minimax(depth - 1, false)[0]; //finds the worst score using recursion at depth one less than ours
+					currScore = minimax(depth - 1, false)[0]; //returns back the score and not the coordinates
 
 					if (currScore > bestScore) { //if our current score is better than the best score possible
 						bestScore = currScore; //then our score becomes the best
@@ -233,7 +233,7 @@ public class TicTacToe   {
 
 					cells[move[0]][move[1]]=1; //"suppose" player makes their move here
 
-					currScore = minimax(depth - 1, true)[0]; //finds the best score using recursion at depth one less than ours
+					currScore = minimax(depth - 1, true)[0]; //returns back the score and not the coordinatess
 
 					if (currScore < bestScore) { //if the current chance of winning for the player is worse than their best chance
 						bestScore = currScore; //the current chance of winning for the computer becomes the best
@@ -245,7 +245,9 @@ public class TicTacToe   {
 				cells[move[0]][move[1]]=0; //reverses the move on the board
 			}
 		}
-		return new int[] {bestScore, bestX, bestY}; //returns the chance of winning, and the best coordinates to move to to make it
+		
+		int[] bestCombo = new int[] {bestScore, bestX, bestY};
+		return bestCombo; //returns the chance of winning, and the best coordinates to move to to make it
 	}
 
 	public static boolean hasWinner() {
