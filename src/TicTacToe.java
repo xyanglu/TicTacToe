@@ -187,6 +187,8 @@ public class TicTacToe   {
 	}		
 
 	//determines in an array the coordinates for the next best possible move by the computer
+	//depth level of 9, meaning 9 moves
+	//returns the best move to make in terms of the computer	
 	public static int[] compMove() {
 		int[] bestMove = minimax(9, true);
 		return bestMove;
@@ -205,43 +207,45 @@ public class TicTacToe   {
 			bestScore = Integer.MAX_VALUE; //Anything can be lower than this value
 
 
-		int currentScore; //an integer that scores the current possible score
-		int bestRow = -1; //setting the xCoordinate as -1 by default to prevent a valid default return
-		int bestCol = -1; //setting the yCoordinate as -1 by default to prevent a valid default return
+		int currScore; //an integer that scores the current possible score
+		int bestX = -1; //setting the xCoordinate as -1 by default to prevent a valid default return
+		int bestY = -1; //setting the yCoordinate as -1 by default to prevent a valid default return
 
 		if (possibleMoves.isEmpty() || depth == 0) { //no more possible moves, either from there already being a winner or full board
 			bestScore = evaluate(); 
-		}	else {
+		}	
+		else {
 			for (int[] move : possibleMoves) { //for every pair of moves in the moveset
 				if (isComp) {  //computer's hypothetical turn
 
 					cells[move[0]][move[1]]=2; //"suppose" the computer makes their move here
 
-					currentScore = minimax(depth - 1, false)[0]; //finds the worst score using recursion at depth one less than ours
+					currScore = minimax(depth - 1, false)[0]; //finds the worst score using recursion at depth one less than ours
 
-					if (currentScore > bestScore) { //if our current score is better than the best score possible
-						bestScore = currentScore; //then our score becomes the best
-						bestRow = move[0]; //we remember the position of the the best move
-						bestCol = move[1];
+					if (currScore > bestScore) { //if our current score is better than the best score possible
+						bestScore = currScore; //then our score becomes the best
+						bestX = move[0]; //we remember the position of the the best move
+						bestY = move[1];
 					}
 
-				} else {  //player's hypothetical turn
+				} 
+				else {  //player's hypothetical turn
 
 					cells[move[0]][move[1]]=1; //"suppose" player makes their move here
 
-					currentScore = minimax(depth - 1, true)[0]; //finds the best score using recursion at depth one less than ours
+					currScore = minimax(depth - 1, true)[0]; //finds the best score using recursion at depth one less than ours
 
-					if (currentScore < bestScore) { //if the current chance of winning for the player is worse than their best chance
-						bestScore = currentScore; //the current chance of winning for the computer becomes the best
-						bestRow = move[0]; //we remember the position of the the best move
-						bestCol = move[1];
+					if (currScore < bestScore) { //if the current chance of winning for the player is worse than their best chance
+						bestScore = currScore; //the current chance of winning for the computer becomes the best
+						bestX = move[0]; //we remember the position of the the best move
+						bestY = move[1];
 					}
 
 				}
 				cells[move[0]][move[1]]=0; //reverses the move on the board
 			}
 		}
-		return new int[] {bestScore, bestRow, bestCol}; //returns the chance of winning, and the best coordinates to move to to make it
+		return new int[] {bestScore, bestX, bestY}; //returns the chance of winning, and the best coordinates to move to to make it
 	}
 
 	public static boolean hasWinner() {
@@ -295,13 +299,17 @@ public class TicTacToe   {
 		int totalScore = 0; //total score of the 8 combinations
 		int[] coord1,coord2,coord3 =new int[2];
 
-		totalScore += lineScore(new int[] {0,0},new int[] {0,1},new int[] {0,2});  //first row
-		totalScore += lineScore(new int[] {1,0},new int[] {1,1},new int[] {1,2});  //second row
-		totalScore += lineScore(new int[] {2,0},new int[] {2,1},new int[] {2,2});  //third row
-
-		totalScore += lineScore(new int[] {0,0},new int[] {1,0},new int[] {2,0});  //first column
-		totalScore += lineScore(new int[] {0,1},new int[] {1,1},new int[] {2,1});  //second column
-		totalScore += lineScore(new int[] {0,2},new int[] {1,2},new int[] {2,2});  //third column
+		for (int i=0;i<ROWS;i++) {
+			coord1=new int[] {i,0};
+			coord2=new int[] {i,1};
+			coord3=new int[] {i,2};
+			totalScore += lineScore(coord1,coord2,coord3); //accumulates first, second, and third rows
+			
+			coord1=new int[] {0,i};
+			coord2=new int[] {1,i};
+			coord3=new int[] {2,i};
+			totalScore += lineScore(coord1,coord2,coord3); //accumulates first, second, and third columns
+		}
 
 		totalScore += lineScore(new int[] {0,0},new int[] {1,1},new int[] {2,2});  //diagonal going down
 		totalScore += lineScore(new int[] {2,0},new int[] {1,1},new int[] {0,2});  //diagonal going up
@@ -340,11 +348,11 @@ public class TicTacToe   {
 		// else score becomes 1 since there is nothing in first cell
 		if (cells[x2][y2] == 2) 			
 			if (score == 1) 				
-				score = 10;						
+				score *= 10;						
 			 else if (score == -1)  			
 				return 0;				
 			 else   							
-				score = 1;
+				score = 1; //blank cell and then a computer cell
 
 		// if player owns second cell
 		// if first cell is player's, then score becomes 10 since second cell is also player's
@@ -352,11 +360,11 @@ public class TicTacToe   {
 		// else score becomes -1 since first cell is blank
 		else if (cells[x2][y2] == 1) 	
 			if (score == -1)  					
-				score = -10;					
+				score *= 10;					
 			else if (score == 1)			
 				return 0;		
 			else  						 
-				score = -1;					
+				score = -1; //blank cell and then a player cell					
 
 		// if computer has third cell
 		// checks if score is greater than 0
@@ -374,7 +382,7 @@ public class TicTacToe   {
 			else if (score < 0) 			
 				return 0;						
 			else							
-				score = 1;						
+				score = 1;	//two blank cells and a comp cell						
 
 		// if player has third cell
 		// checks if score is less than 0
@@ -385,13 +393,13 @@ public class TicTacToe   {
 		// similar to the condition above, if player cant win and computer cant win, and a tie is already returned
 		// then the last cell is _ _ o
 		// having a score of 1
-		else if (cells[x3][y3] == 1)	//if the cell was taken by player
-			if (score < 0) 					//if player has possibility of winning
+		else if (cells[x3][y3] == 1)	
+			if (score < 0) 					
 				score *= 10;
-			else if (score > 1) 			//if the computer has a possibility of winning
-				return 0;						//possibility = 0 due to o,o,x
-			else							//just the last cell is the player's
-				score = -1;						//possibility of winning decreases
+			else if (score > 0) 			
+				return 0;						
+			else							
+				score = -1;	//two blank cells and a player cell
 
 		return score;
 	}
