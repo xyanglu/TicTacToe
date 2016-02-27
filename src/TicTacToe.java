@@ -21,7 +21,7 @@ public class TicTacToe   {
 	public static void displayMainMenuOptions() throws IOException {
 
 		while (!(numPlayers==3)) {
-			System.out.println("Hello! Welcome to Yang's Tic-Tac-Toe Game. Select an option below. (Ex. 1 for 2-player)"); //displays the menu
+			System.out.println("Hello! Welcome to Yang's Tic-Tac-Toe Game. Select an option below. (Ex. 1 for 1-player)"); //displays the menu
 
 			System.out.println();
 
@@ -133,7 +133,7 @@ public class TicTacToe   {
 			if (!player1turn && numPlayers == 1) {
 				System.out.println("Computer's Turn");
 
-				bestMove=minimax(9-numMoves,true);
+				bestMove=minimax(2,true);
 				xCoord=bestMove[1];
 				yCoord=bestMove[2];
 
@@ -171,6 +171,7 @@ public class TicTacToe   {
 		else
 			score=1000;
 		int currentScore;
+
 		if (depth==0||hasWinner())
 			score=getBoardScore();
 		else {
@@ -201,18 +202,18 @@ public class TicTacToe   {
 		int[] bestCombo = new int[] {score,bestX,bestY};
 		return bestCombo;
 	}
-	
+
 	public static List<int[]> generateMoves() {
 		List<int[]> listMoves = new ArrayList<int[]>();
-		
+
 		for (int i=0;i<ROWS;i++)
 			for (int j=0;j<COLS;j++)
 				if (cells[i][j]==0)
 					listMoves.add(new int[] {i,j});
-		
+
 		return listMoves;
 	}
-	
+
 	public static int getBoardScore() {
 		int score=0;		
 
@@ -223,23 +224,23 @@ public class TicTacToe   {
 		score+=getScore(new int[] {0,0},new int[] {1,0},new int[] {2,0}); //checks cols score
 		score+=getScore(new int[] {0,1},new int[] {1,1},new int[] {2,1});
 		score+=getScore(new int[] {0,2},new int[] {1,2},new int[] {2,2});
-		
+
 		score+=getScore(new int[] {0,0},new int[] {1,1},new int[] {2,2}); //checks diagonals score
 		score+=getScore(new int[] {2,0},new int[] {1,1},new int[] {0,2});
-		
+
 		return score;
 	}
-	
+
 	//using heuristics to determine the value of each win by the combinations in the cells
 	public static int getScore(int[] a, int[] b, int[] c) {
 		int score=0;
-		
+
 		//first cell
 		if (cells[a[0]][a[1]]==2)
 			score=1;
 		else if (cells[a[0]][a[1]]==1)
 			score=-1;
-		
+
 		//second cell
 		if (cells[b[0]][b[1]]==2)
 			if (score==1)
@@ -248,7 +249,7 @@ public class TicTacToe   {
 				return 0;
 			else if (score==0) //empty first cell
 				score=1;
-		
+
 		if (cells[b[0]][b[1]]==1)
 			if (score==-1)
 				score=-10;
@@ -256,7 +257,7 @@ public class TicTacToe   {
 				return 0;
 			else if (score==0) //empty first cell
 				score=-1;
-		
+
 		//third cell
 		if (cells[c[0]][c[1]]==2)
 			if (score>0)
@@ -265,7 +266,7 @@ public class TicTacToe   {
 				score=1;
 			else if (score<0) //empty first cell
 				return 0;
-		
+
 		if (cells[c[0]][c[1]]==1)
 			if (score<0)
 				score*=10; //if cell has anything in either cell, multiply score by 10 (ie. from -10 to -100, or -1 to -10)
@@ -273,20 +274,20 @@ public class TicTacToe   {
 				score=-1;
 			else if (score>0) //empty first cell
 				return 0;
-		
+
 		return score;
-		
-		
+
+
 	}
 
 	//checks if there is a winner in the game
 	public static void checkWinner() {
 		for (int i=0;i<ROWS;i++) { 
-			if ((cells[i][0]==cells[i][1]) && (cells[i][1]==cells[i][2])) { //checks rows
+			if ((cells[i][0]==cells[i][1]) && (cells[i][1]==cells[i][2])) //checks rows
 				if (!(cells[i][0]==0))
 					winner=cells[i][0];
-			}
-			else if ((cells[0][i]==cells[1][i]) && (cells[1][i]==cells[2][i]))  //checks cols
+
+			if ((cells[0][i]==cells[1][i]) && (cells[1][i]==cells[2][i]))  //checks cols
 				if (!(cells[0][i]==0))
 					winner=cells[0][i];
 		}
@@ -309,9 +310,9 @@ public class TicTacToe   {
 				if (!(cells[i][0]==0))
 					isWinner=true;
 
-				else if ((cells[0][i]==cells[1][i]) && (cells[1][i]==cells[2][i]))  //checks cols
-					if (!(cells[0][i]==0))
-						isWinner=true;
+			if ((cells[0][i]==cells[1][i]) && (cells[1][i]==cells[2][i]))  //checks cols
+				if (!(cells[0][i]==0))
+					isWinner=true;
 		}
 
 		if ((cells[0][0]==cells[1][1]) && (cells[1][1]==cells[2][2]))  //checks top left down right diagonal
