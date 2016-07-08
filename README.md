@@ -1,5 +1,5 @@
-This is my implementation for the TicTacToe Challenge from 8th Light
+This is a text-only game of TicTacToe consisting of an computer player that utilizes the MiniMax algorithm to follow the decision rules of always win, never lose
 
-It's written in Java and uses the minimax algorithm
+Installation:
 
-My thought process can be found here: https://drive.google.com/file/d/0B_wPW8iNfFoUaTEtOElKdWpWNlU/view?usp=sharing
+To run the game, open the .java file with an IDE and run the file
