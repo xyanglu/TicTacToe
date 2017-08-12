@@ -2,4 +2,4 @@ This is a text-only game of TicTacToe consisting of an computer player that util
 
 Installation:
 
-To run the game, open the .java file with an IDE and run the file
+To run the game, run the .java file
